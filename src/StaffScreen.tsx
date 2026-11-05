@@ -1,8 +1,11 @@
 import './StaffScreen.css'
 
 export type Screen = 'nameGate' | 'staff' | 'dietary' | 'admin'
+export const DEFAULT_NAME = 'Praney Aggarwal'
 
 type StaffScreenProps = {
+  name: string
+  onNameChange: (name: string) => void
   screen: Screen
   onNavigate: (screen: Screen) => void
 }
@@ -81,7 +84,15 @@ function Navigation({
   )
 }
 
-function NameGate({ onContinue }: { onContinue: () => void }) {
+function NameGate({
+  name,
+  onNameChange,
+  onContinue,
+}: {
+  name: string
+  onNameChange: (name: string) => void
+  onContinue: () => void
+}) {
   return (
     <>
       <p className="staff-date">Thursday 8 October</p>
@@ -107,8 +118,9 @@ function NameGate({ onContinue }: { onContinue: () => void }) {
             autoComplete="name"
             id="staff-name"
             name="name"
+            onChange={(event) => onNameChange(event.target.value)}
             type="text"
-            defaultValue="Praney Aggarwal"
+            value={name}
           />
           <button type="submit">Continue</button>
         </form>
@@ -118,11 +130,17 @@ function NameGate({ onContinue }: { onContinue: () => void }) {
   )
 }
 
-function StaffLunch({ onNotYou }: { onNotYou: () => void }) {
+function StaffLunch({
+  name,
+  onNotYou,
+}: {
+  name: string
+  onNotYou: () => void
+}) {
   return (
     <section className="staff-content">
       <div className="staff-greeting">
-        <span>Hello, Praney Aggarwal</span>
+        <span>Hello, {name}</span>
         <span className="staff-status staff-status-closed">CLOSED</span>
       </div>
       <h2 className="staff-page-title">What would you like?</h2>
@@ -255,16 +273,31 @@ function AdminPage() {
   )
 }
 
-function StaffScreen({ screen, onNavigate }: StaffScreenProps) {
+function StaffScreen({
+  name,
+  onNameChange,
+  screen,
+  onNavigate,
+}: StaffScreenProps) {
   return (
     <main className="staff-screen">
       <Header />
       <Navigation screen={screen} onNavigate={onNavigate} />
       {screen === 'nameGate' && (
-        <NameGate onContinue={() => onNavigate('staff')} />
+        <NameGate
+          name={name}
+          onNameChange={onNameChange}
+          onContinue={() => onNavigate('staff')}
+        />
       )}
       {screen === 'staff' && (
-        <StaffLunch onNotYou={() => onNavigate('nameGate')} />
+        <StaffLunch
+          name={name}
+          onNotYou={() => {
+            onNameChange(DEFAULT_NAME)
+            onNavigate('nameGate')
+          }}
+        />
       )}
       {screen === 'dietary' && <DietaryPage />}
       {screen === 'admin' && <AdminPage />}
